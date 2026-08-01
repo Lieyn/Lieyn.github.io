@@ -1,0 +1,32 @@
+baseURL = "https://Lieyn.github.io/"
+languageCode = "en-us"
+title = "Quan Tran"
+theme = "PaperMod"
+
+[params]
+  ShowReadingTime = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+
+[params.homeInfoParams]
+  Title = "Quan Tran"
+  Content = "I'm a high school student working through how people make decisions under uncertainty — in chess, in research, and in teaching."
+
+[[menu.main]]
+  identifier = "posts"
+  name = "Posts"
+  url = "/posts/"
+  weight = 10
+
+[[menu.main]]
+  identifier = "archive"
+  name = "Archive"
+  url = "/archives/"
+  weight = 20
+
+[[menu.main]]
+  identifier = "tags"
+  name = "Tags"
+  url = "/tags/"
+  weight = 30   
