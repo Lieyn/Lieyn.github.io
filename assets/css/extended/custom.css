@@ -1,0 +1,92 @@
+/* ---- Lil'Log-style reading layout ---- */
+
+:root {
+  --main-width: 760px;
+  --content-gap: 22px;
+}
+
+.post-content {
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.post-content p {
+  margin: 1.1em 0;
+}
+
+/* Tighter, more academic headings */
+.post-content h2 {
+  margin-top: 2.2em;
+  font-size: 1.45rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.25em;
+}
+
+.post-content h3 {
+  margin-top: 1.8em;
+  font-size: 1.18rem;
+}
+
+/* Table of contents — sits quietly at the top like Lil'Log */
+.toc {
+  font-size: 0.92rem;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+}
+
+.toc details summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Math display blocks shouldn't overflow on mobile */
+mjx-container[jax="CHTML"][display="true"] {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35em 0;
+}
+
+/* Code */
+.post-content pre {
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.post-content code {
+  font-size: 0.88em;
+}
+
+/* Tables — used a lot in results write-ups */
+.post-content table {
+  font-size: 0.9rem;
+  margin: 1.5em 0;
+}
+
+.post-content table th,
+.post-content table td {
+  padding: 8px 12px;
+}
+
+/* Figure captions */
+.post-content figure figcaption {
+  font-size: 0.85rem;
+  color: var(--secondary);
+  text-align: center;
+  margin-top: 0.5em;
+}
+
+/* Blockquote as a "note" callout */
+.post-content blockquote {
+  border-left: 3px solid var(--tertiary);
+  font-style: normal;
+  color: var(--secondary);
+}
+
+/* Homepage post list: date first, Lil'Log style */
+.post-entry {
+  padding: 20px;
+}
+
+.post-entry .entry-hint {
+  color: var(--secondary);
+}
