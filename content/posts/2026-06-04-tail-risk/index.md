@@ -1,7 +1,7 @@
 ---
 title: "Why More Bets Can Reduce Relative Tail Risk"
 subtitle: "A gambling simulation, a convex-order proof, and a counterexample that failed its reality check"
-date: 2026-08-05
+date: 2026-06-04
 draft: false
 math: true
 author: "Quan Tran"
@@ -66,17 +66,19 @@ I separated three claims:
 
 H3 can be written as
 
+<p>
 $$
 \frac{\mathrm{CVaR}_{95,H}}{\mathrm{CVaR}_{95,L}}
 >
 \frac{\mathbb{E}[L_H]}{\mathbb{E}[L_L]},
 $$
+</p>
 
 where $\mathrm{CVaR}_{95}$ is the average loss among the worst 5% of simulated years.
 
 ## The model rejected the strongest hypothesis
 
-I simulated 200,000 bettor-years per scenario. Mean loss rose from 6.48 to 22.52, while $\mathrm{CVaR}_{95}$ rose from 77.94 to 159.51. H1 and the absolute-CVaR part of H2 held. H3 did not: the mean rose $3.48\times$, compared with only $2.05\times$ for CVaR. Equivalently, $\mathrm{CVaR}_{95}/\mathbb{E}[L]$ fell from 12.03 to 7.08.
+I simulated 200,000 bettor-years per scenario. Mean loss rose from 6.48 to 22.52, while $\mathrm{CVaR}_{95}$ rose from 77.94 to 159.51. H1 and the absolute-CVaR part of H2 held. H3 did not: the mean rose $3.48\times$, compared with only $2.05\times$ for CVaR. Equivalently, $\mathrm{CVaR}_{95}/\mathbb{E}[L]$ fell from 12.03 to 7.08. Across twenty independent batches of 10,000 paths, the 95% Monte Carlo intervals were $[6.33,6.62]$ and $[22.26,22.79]$ for the Low and Very-high means, and $[77.58,78.26]$ and $[158.77,160.19]$ for their CVaRs. These intervals measure simulation precision, not uncertainty in the behavioral assumptions.
 
 ![Absolute mean and tail losses increase across scenarios, but CVaR relative to the mean declines. Values come from 200,000 simulated bettor-years per scenario.](baseline_reversal.png)
 
@@ -84,15 +86,51 @@ This negative relative-tail result did not mean that harm disappeared. For fixed
 
 That distinction kept the model tied to gambling rather than turning it into an exercise in variance arithmetic. Relative tail shape and absolute exposure answer different questions. A household can face a much larger chance of crossing a consequential loss level even when normalized CVaR declines.
 
-A separate 100,000-path stylized bankroll sensitivity used its own common-random-number run. Its unlimited-bankroll relative-tail ratio was 0.584, rather than the headline run's 0.589; at the tightest starting bankroll it fell to 0.563. The floor truncated the Very-high arm's tail more strongly, so finite bankroll made H3 harder to satisfy, not easier.
+A separate 100,000-path stylized bankroll sensitivity used its own common-random-number run. Its unlimited-bankroll relative-tail ratio was 0.584, rather than the headline run's 0.589; at the tightest starting bankroll—$25\times$ the mean stake, or about 152.50 euros—it fell to 0.563, and 4.16% of Very-high paths exhausted the bankroll. The floor truncated the Very-high arm's tail more strongly, so finite bankroll made H3 harder to satisfy, not easier.
 
 ## A small effect hidden by simulation noise
 
-Before interpreting the decomposition, I needed to know whether post-loss escalation did any work at all. Holding escalation at its Low value and increasing annual bets from 23 to 78 moved mean loss from 6.43 to 21.88 and CVaR from 78.08 to 153.24. Changing escalation alone at $N=23$ moved mean loss only to 6.62 and CVaR to 81.24 — about a 3.0% mean effect in the simulation and 2.93% analytically. Rising frequency therefore produced almost all of the baseline change.
+Before interpreting the decomposition, I needed to know whether post-loss escalation did any work at all. In a 500,000-path-per-case common-random-number decomposition, holding escalation at its Low value and increasing annual bets from 23 to 78 moved mean loss from 6.43 to 21.88 and CVaR from 78.08 to 153.24. Changing escalation alone at $N=23$ moved mean loss only to 6.62 and CVaR to 81.24—about a 3.0% mean effect in the simulation and 2.93% analytically. Rising frequency therefore produced almost all of the baseline change.
 
 An early version used independent random seeds for the Low and High scenarios, making a small channel effect difficult to separate from Monte Carlo noise.
 
-I switched to common random numbers (CRN): Low and High scenarios reuse matched underlying random draws, so the comparison removes much of the variation shared by both. In a separate Very-high-frequency diagnostic with $N=78$, turning elevation on ($c:1.00\rightarrow1.25$) increased mean loss by 3.64%, against 3.66% analytically. CRN reduced the variance of that paired estimate by about $223\times$, equivalent to a $\sqrt{223}\approx14.9\times$ reduction in standard error. This 3.64% diagnostic is not the same comparison as the approximately 3.0% escalation-only decomposition at $N=23$. CRN did not make either effect larger; it made a small effect measurable.
+I switched to common random numbers (CRN): Low and High scenarios reuse matched underlying random draws, so the comparison removes much of the variation shared by both. The decomposition implements that pairing by passing the same `common_seed` to every case:
+
+```python
+# impatience_simulation.py, lines 306–327
+def decomposition(
+    spec: ModelSpec, scenarios: list[Scenario], n_paths: int = 500_000
+) -> pd.DataFrame:
+    """Separate frequency and post-loss-response channels."""
+    low, high = scenarios[0], scenarios[-1]
+    cases = {
+        "Low reference": low,
+        "Frequency only": Scenario(
+            "Frequency only", high.x, high.bets, low.p_chase
+        ),
+        "Escalation only": Scenario(
+            "Escalation only", high.x, low.bets, high.p_chase
+        ),
+        "Combined": high,
+    }
+    rows = []
+    common_seed = SEED + 500_000
+    for name, s in cases.items():
+        losses = simulate_paths(spec, s, n_paths, common_seed)
+        rows.append(
+            {
+                "case": name,
+                "bets": s.bets,
+                "p_chase": s.p_chase,
+                **summarize(losses),
+            }
+        )
+    table = pd.DataFrame(rows)
+    table.to_csv(OUT / "decomposition.csv", index=False)
+    return table
+```
+
+In a separate Very-high-frequency diagnostic with $N=78$, turning elevation on ($c:1.00\rightarrow1.25$) increased mean loss by 3.64%, against 3.66% analytically. CRN reduced the variance of that paired estimate by about $223\times$, equivalent to a $\sqrt{223}\approx14.9\times$ reduction in standard error. This 3.64% diagnostic is not the same comparison as the approximately 3.0% escalation-only decomposition at $N=23$. CRN did not make either effect larger; it made a small effect measurable.
 
 ## From $1/\sqrt{N}$ intuition to a theorem
 
@@ -105,7 +143,7 @@ $$
 
 More bets raise expected loss linearly while diversifying per-bet outcome noise at the familiar $1/\sqrt{N}$ rate. This is the Gaussian intuition behind the figure above.
 
-A 162-design sensitivity sweep supported that mechanism numerically. I varied the stake distribution, escalation size, frequency growth, escalation-odds growth, and between-bettor stake heterogeneity. H3 held in none of the 162 designs. But these were not 162 independent confirmations: frequency growth alone explained 92.18% of the variation in the relative-tail ratio, and the correlation between that ratio and $1/\sqrt{N_H/N_L}$ was 0.9728. Most rows were restatements of the same averaging effect.
+A 162-design sensitivity sweep supported that mechanism numerically. I varied the stake distribution, escalation size, frequency growth, escalation-odds growth, and between-bettor stake heterogeneity. Each design used 30,000 paths per arm with common random numbers; all point estimates remained below one, with a maximum relative-tail ratio of 0.839. In 81 designs, I added a bettor-level stake scale $S$: it was lognormal with median 6.10 euros, truncated at Nelson et al.'s observed maximum of 1,930.87 euros, with $\sigma=1.484$ calibrated so that the truncated mean equaled the reported 18.30 euros. H3 held in none of the 162 designs. But these were not 162 independent confirmations: frequency growth alone explained 92.18% of the variation in the relative-tail ratio, and the correlation between that ratio and $1/\sqrt{N_H/N_L}$ was 0.9728. Most rows were restatements of the same averaging effect.
 
 The theorem is stronger than the Gaussian story, but narrower than the full simulation. Let $Y_t$ be i.i.d. per-bet losses with $0<\mu=\mathbb{E}[Y_t]<\infty$. For this extension only, let $S\ge0$ be an integrable bettor-level stake scale, independent of every $Y_t$, and define
 
@@ -129,16 +167,53 @@ R_N
 $$
 
 and convex-order monotonicity then gives $R_{N+1}\le R_N$.
-
 This upgrades "my simulation said no" to a structural result for the frequency-only i.i.d. submodel, even with scenario-invariant independent stake heterogeneity. It does *not* prove the result for my full two-state process, where post-loss escalation makes wagers state-dependent and changes across scenarios. That extension remains numerical.
 
 ## Breaking the theorem — and checking what broke
 
 The proposition also suggested where to look for a counterexample: change the normalized loss distribution itself. I replaced fixed bet counts with rounded lognormal counts. Their locations preserved the same scenario means, 23 and 78, while their dispersion parameters could differ. I used an exact C++ wager loop because, at $\sigma_H=2.2$, the rare paths with enormous uncapped counts are precisely the paths that drive CVaR; a normal approximation or arbitrary loop cap can erase the effect being tested.
 
-With equal dispersion $\sigma_L=\sigma_H=1.0$, the relative-tail ratio was 0.641, compared with 0.589 under fixed counts. Holding $\sigma_L=1.0$ and increasing $\sigma_H$ to 1.8 raised it to 0.955. At $\sigma_H=2.2$, it crossed the H3 boundary at 1.122. A second crossing specification, $(\sigma_L,\sigma_H)=(0.5,2.0)$, reached 1.217. Eight independent exact wager-loop replications confirmed the two crossings.
+```cpp
+// random_count_exact.cpp, lines 77–108 (inside simulate)
+for (std::size_t i = 0; i < paths; ++i) {
+  std::uint64_t n;
+  if (sigma_count == 0.0) {
+    n = static_cast<std::uint64_t>(std::llround(target_count));
+  } else {
+    double raw = std::exp(mu_count + sigma_count * normal(rng));
+    n = std::max<std::uint64_t>(1, std::llround(raw));
+    n = std::min(n, count_cap);
+  }
+  count_sum += n;
+  count_sum_sq += static_cast<long double>(n) * n;
+  count_max = std::max(count_max, n);
 
-![Mean-preserved exact-count experiment with σ_L = 1.0. Error bars show the between-replication standard deviation across eight runs of 200,000 paths per arm. A value above one satisfies H3.](dispersion_boundary.png)
+  bool elevated = false;
+  double net = 0.0;
+  for (std::uint64_t t = 0; t < n; ++t) {
+    double stake = elevated ? elevated_stake(rng) : normal_stake(rng);
+    bool win = uniform(rng) < q_win;
+    net += win ? payout_multiple * stake : -stake;
+    elevated = (!win) && (uniform(rng) < p_chase);
+  }
+  losses.push_back(-net);
+}
+
+long double loss_sum =
+    std::accumulate(losses.begin(), losses.end(), 0.0L);
+double mean = static_cast<double>(loss_sum / paths);
+std::sort(losses.begin(), losses.end());
+std::size_t tail_start = static_cast<std::size_t>(std::floor(0.95 * paths));
+long double tail_sum = std::accumulate(
+    losses.begin() + tail_start, losses.end(), 0.0L);
+double cvar95 = static_cast<double>(tail_sum / (paths - tail_start));
+```
+
+*The complete source first calibrates $\mu$ by bisection so that rounding produces the target mean count. This excerpt then runs every realized wager—without an arbitrary loop cap in the reported experiment—and computes CVaR from the exact upper 5% by rank.*
+
+With equal dispersion $\sigma_L=\sigma_H=1.0$, the eight-run mean relative-tail ratio was 0.644, compared with 0.589 under fixed counts. Holding $\sigma_L=1.0$ and increasing $\sigma_H$ to 1.8 raised it to 0.967. At $\sigma_H=2.2$, it crossed the H3 boundary at 1.117. A second crossing specification, $(\sigma_L,\sigma_H)=(0.5,2.0)$, reached 1.222. Eight independent exact wager-loop replications of 200,000 paths per arm confirmed the two crossings.
+
+![Mean-preserved exact-count experiment with sigma L equal to 1.0. Error bars show the between-replication standard deviation across eight runs of 200,000 paths per arm. A value above one satisfies H3.](dispersion_boundary.png)
 
 Mathematically, this is a valid existence result: scenario-dependent count dispersion can overpower frequency diversification. Empirically, it created a new problem. For a lognormal variable,
 
@@ -156,9 +231,9 @@ $$
 
 A preserved High-scenario median of 78 implies mean annual counts of 394, 576, and 877 at $\sigma_H=1.8, 2.0,$ and $2.2$. Nelson et al. reported a pooled mean of 92.8 bets over eight months, about 139 when mechanically annualized. The crossing cases require four to six times that annualized mean.
 
-![The moment squeeze across the three reported specifications (σ_L, σ_H). Blue marks the non-crossing case; coral marks the two crossings. Preserving mean count forces the implied median downward, while preserving median count forces the implied mean upward. Nelson's pooled eight-month median and mean are annualized only as scale references, not as a fitted scenario distribution.](moment_squeeze.png)
+![The moment squeeze across the three reported dispersion specifications. Blue marks the non-crossing case; coral marks the two crossings. Preserving mean count forces the implied median downward, while preserving median count forces the implied mean upward. Nelson's pooled eight-month median and mean are annualized only as scale references, not as a fitted scenario distribution.](moment_squeeze.png)
 
-The pooled account data show substantial heterogeneity. I checked [Nelson et al.'s Table 2](https://doi.org/10.1556/2006.2021.00029) directly: over the pooled eight-month window, bet count had mean 92.80, SD 374.12, and median 15; median net loss was 25 euros. The count mean and SD imply a moment-matched lognormal $\sigma\approx1.69$. But equal dispersion at 1.69 in both arms produced a relative-tail ratio around 0.74, not a crossing. More importantly, pooled dispersion says nothing about whether dispersion widens with impatience. The counterexample is mathematically live and empirically unverified.
+The pooled account data show substantial heterogeneity. I checked [Nelson et al.'s Table 2](https://doi.org/10.1556/2006.2021.00029) directly: over the pooled eight-month window, bet count had mean 92.80, SD 374.12, and median 15; median net loss was 25 euros. The count mean and SD imply a moment-matched lognormal $\sigma\approx1.69$. In the explicit equal-dispersion $(1.69,1.69)$ configuration, the eight-run mean relative-tail ratio was 0.733, not a crossing. More importantly, pooled dispersion says nothing about whether dispersion widens with impatience. The counterexample is mathematically live and empirically unverified.
 
 One debugging episode sharpened this conclusion. During revision, an AI review pass reported that a median-preserved rerun erased the crossing. A second AI-assisted check could not reproduce that result and instead reproduced the crossing. That disagreement forced me to inspect both test harnesses: the first review harness, not the research package, capped annual counts at 5,000. At $\sigma_H=2.2$, the cap removed precisely the rare high-count paths that drive CVaR. An uncapped rerun restored the crossing. The disagreement did not rescue the empirical case; it replaced a false objection with the more precise moment-squeeze objection.
 
@@ -172,9 +247,9 @@ The model's scale also limits the conclusion. The Very-high scenario uses 78 bet
 
 The next empirical question is narrower than the one I began with: does measured impatience predict not only the average level of betting activity, but also its dispersion? Until linked data measure both, the most defensible conclusion is a boundary statement. Scenario-dependent count dispersion can reverse normalized tail risk mathematically, but the tested reversals do not yet pass a joint mean-and-median reality check.
 
-> **Reproducibility.** The companion research package contains the Python baseline and robustness simulation, the exact C++ random-count experiment, generated CSV outputs, figures, and fixed seeds. The numerical claims in this post trace to those files; Monte Carlo precision does not substitute for uncertainty about the behavioral assumptions.
+> **Reproducibility.** The companion research package contains the Python baseline and robustness simulation, the exact C++ random-count experiment, the one-command eight-replication runner and aggregator, generated CSV outputs, figures, and fixed seeds. The numerical claims in this post trace to those files; Monte Carlo precision does not substitute for uncertainty about the behavioral assumptions.
 >
-> Code: **[TODO: insert public GitHub repo URL]** &nbsp;·&nbsp; Data and preprint: **[TODO: insert OSF DOI]**
+> Code: **[github.com/Lieyn/impatience-tail-risk](https://github.com/Lieyn/impatience-tail-risk)** &nbsp;·&nbsp; Data and preprint: **[TODO: insert OSF DOI]**
 
 ## References
 
@@ -183,4 +258,4 @@ The next empirical question is narrower than the one I began with: does measured
 3. Schulz van Endert, T., & Mohr, P. N. C. (2020). [Likes and impulsivity: Investigating the relationship between actual smartphone use and delay discounting.](https://doi.org/10.1371/journal.pone.0241383) *PLOS ONE*, 15(11), e0241383.
 4. Nelson, S. E., Edson, T. C., Louderback, E. R., Tom, M. A., Grossman, A., & LaPlante, D. A. (2021). [Changes to the playing field: A contemporary study of actual European online sports betting.](https://doi.org/10.1556/2006.2021.00029) *Journal of Behavioral Addictions*, 10(3), 396–411.
 5. Zhang, K., Rights, J. D., Deng, X., Lesch, T., & Clark, L. (2024). [Within-session chasing of losses and wins in an online eCasino.](https://doi.org/10.1038/s41598-024-70738-3) *Scientific Reports*, 14, 20353.
-6. Baker, S. R., Balthrop, J., Johnson, M. J., Kotter, J. D., & Pisciotta, K. (2026). [Gambling away stability: Sports betting's impact on vulnerable households.](https://www.sciencedirect.com/science/article/abs/pii/S0304405X26001017) *Journal of Financial Economics*. Earlier version: [NBER Working Paper No. 33108](https://www.nber.org/papers/w33108), 2024.
+6. Baker, S. R., Balthrop, J., Johnson, M. J., Kotter, J. D., & Pisciotta, K. (2026). [Gambling away stability: Sports betting's impact on vulnerable households.](https://www.sciencedirect.com/science/article/abs/pii/S0304405X26001017) *Journal of Financial Economics*. Earlier version: [NBER Working Paper No. 33108](https://www.nber.org/papers/w33108), 2024

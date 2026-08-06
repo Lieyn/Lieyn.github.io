@@ -102,6 +102,12 @@ Mostly I write up things I've actually built or proved. Posts lean quantitative;
 [markup]
   [markup.goldmark.renderer]
     unsafe = true
+  [markup.goldmark.extensions]
+    [markup.goldmark.extensions.passthrough]
+      enable = true
+      [markup.goldmark.extensions.passthrough.delimiters]
+        block = [['\[', '\]'], ['$$', '$$']]
+        inline = [['\(', '\)'], ['$', '$']]
   [markup.highlight]
     noClasses = false
     codeFences = true
@@ -112,7 +118,6 @@ Mostly I write up things I've actually built or proved. Posts lean quantitative;
     startLevel = 2
     endLevel = 4
     ordered = false
-
 [taxonomies]
   tag = "tags"
   category = "categories"
