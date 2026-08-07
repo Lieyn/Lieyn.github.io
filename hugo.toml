@@ -102,6 +102,8 @@ Mostly I write up things I've actually built or proved. Posts lean quantitative;
 [markup]
   [markup.goldmark.renderer]
     unsafe = true
+  [markup.goldmark.parser.attribute]
+    title = true
   [markup.goldmark.extensions]
     [markup.goldmark.extensions.passthrough]
       enable = true

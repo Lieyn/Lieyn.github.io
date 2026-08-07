@@ -132,7 +132,7 @@ def decomposition(
 
 In a separate Very-high-frequency diagnostic with $N=78$, turning elevation on ($c:1.00\rightarrow1.25$) increased mean loss by 3.64%, against 3.66% analytically. CRN reduced the variance of that paired estimate by about $223\times$, equivalent to a $\sqrt{223}\approx14.9\times$ reduction in standard error. This 3.64% diagnostic is not the same comparison as the approximately 3.0% escalation-only decomposition at $N=23$. CRN did not make either effect larger; it made a small effect measurable.
 
-## From $1/\sqrt{N}$ intuition to a theorem
+## From $1/\sqrt{N}$ intuition to a theorem {#from-1-sqrt-n-intuition-to-a-theorem}
 
 Suppose per-bet losses $Y_1,\ldots,Y_N$ are independent and identically distributed, with positive mean $\mu$ and variance $\sigma^2$. Total loss has mean $N\mu$ and standard deviation $\sqrt{N}\sigma$. Relative dispersion is therefore
 
@@ -247,9 +247,7 @@ The model's scale also limits the conclusion. The Very-high scenario uses 78 bet
 
 The next empirical question is narrower than the one I began with: does measured impatience predict not only the average level of betting activity, but also its dispersion? Until linked data measure both, the most defensible conclusion is a boundary statement. Scenario-dependent count dispersion can reverse normalized tail risk mathematically, but the tested reversals do not yet pass a joint mean-and-median reality check.
 
-> **Reproducibility.** The companion research package contains the Python baseline and robustness simulation, the exact C++ random-count experiment, the one-command eight-replication runner and aggregator, generated CSV outputs, figures, and fixed seeds. The numerical claims in this post trace to those files; Monte Carlo precision does not substitute for uncertainty about the behavioral assumptions.
->
-> Source excerpts: **[code walkthrough](/posts/tail-risk-code/)**
+> **Reproducibility.** The numerical claims in this post trace to a Python baseline/robustness simulation and an exact C++ random-count experiment. Source excerpts with line-number citations from both files are shown in the [code walkthrough](/posts/tail-risk-code/). Monte Carlo precision does not substitute for uncertainty about the behavioral assumptions.
 
 ## References
 
