@@ -249,7 +249,7 @@ The next empirical question is narrower than the one I began with: does measured
 
 > **Reproducibility.** The companion research package contains the Python baseline and robustness simulation, the exact C++ random-count experiment, the one-command eight-replication runner and aggregator, generated CSV outputs, figures, and fixed seeds. The numerical claims in this post trace to those files; Monte Carlo precision does not substitute for uncertainty about the behavioral assumptions.
 >
-> Code: **[github.com/Lieyn/impatience-tail-risk](https://github.com/Lieyn/impatience-tail-risk)** &nbsp;·&nbsp; Source excerpts: **[code walkthrough](/posts/tail-risk-code/)**
+> Source excerpts: **[code walkthrough](/posts/tail-risk-code/)**
 
 ## References
 
