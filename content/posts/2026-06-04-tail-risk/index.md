@@ -18,9 +18,12 @@ cover:
 
 ## A question left over from M3
 
-This project began after the 2026 MathWorks Math Modeling Challenge. In fourteen hours, my team built a larger model connecting disposable income, gambling losses, and social harm. Like most competition models, it compressed the behavioral story. In particular, impatience was fixed across bettors. The model could change income, frequency, or risk, but it could not ask whether a more impatient bettor would behave differently.
+Following the 2026 Mathworks Modeling Challenge, a mathematics competition that incorporates both mathematical modeling and technical computing, I became more invested in the effects of gambling on individuals. During the competition, the central question – “Should society be concerned about online gambling and its continued growth?” – was broken down into three main parts: estimating disposable income, evaluating risk from demographics, and quantifying these predictions. Given that we only had 14 hours, there seemed to be so much more territory worth exploring post-comp. 
 
-That omission stayed with me. Hyperbolic discounting describes the present value of a delayed reward as
+Harboring lingering thoughts towards the idea, I never looked back until my English teacher introduced an assignment called the I-Search Essay, in which students get to pick a problem that means something to them. Immediately, I thought about the prevalence of “gambling” streams on the internet, particularly on social media platforms, where algorithms dominate and manipulate users’ interests. It seemed like everyone was gambling, whether it was on their health (peptide craze), sports, and even on non-trivial things like the weather. Prediction markets took the internet by storm, causing me to try and understand the effects of digital overstimulation on individuals, particularly adolescents. 
+
+As technology develops, social media’s grip on our lives, especially scrolling algorithms, only increases. With that, prediction markets and other forms of gambling quickly rose in popularity, and waves of advertisements soon followed. The key variable involved in all these choices, which was what I discovered, was impatience. We can use: 
+ Hyperbolic discounting describes the present value of a delayed reward as
 
 $$
 V(D)=\frac{A}{1+kD},
@@ -248,6 +251,10 @@ The model's scale also limits the conclusion. The Very-high scenario uses 78 bet
 The next empirical question is narrower than the one I began with: does measured impatience predict not only the average level of betting activity, but also its dispersion? Until linked data measure both, the most defensible conclusion is a boundary statement. Scenario-dependent count dispersion can reverse normalized tail risk mathematically, but the tested reversals do not yet pass a joint mean-and-median reality check.
 
 > **Reproducibility.** The numerical claims in this post trace to a Python baseline/robustness simulation and an exact C++ random-count experiment. Source excerpts with line-number citations from both files are shown in the [code walkthrough](/posts/tail-risk-code/). Monte Carlo precision does not substitute for uncertainty about the behavioral assumptions.
+>
+## Conclusion
+
+Unsurprisingly, when people gamble more often with more erratic behavior, they obviously lose more money on average. However, their worst years don't get scarier compared to their new, higher average. Betting more often actually smooths things out a bit, the same way flipping a coin 100 times gives a more predictable percentage of heads than flipping it 5 times.
 
 ## References
 
