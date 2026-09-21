@@ -1,7 +1,7 @@
 ---
 title: "Rationality, Intuition, and Heuristics"
 subtitle: "Simon, Kahneman, and Tversky: Why Good Shortcuts Sometimes Produce Bad Judgments"
-date: 2026-04-27
+date: 2026-07-27
 draft: false
 math: true
 author: "Quan Tran"

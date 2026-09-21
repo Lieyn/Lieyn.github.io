@@ -86,4 +86,4 @@ long double tail_sum = std::accumulate(
 double cvar95 = static_cast<double>(tail_sum / (paths - tail_start));
 ```
 
-*The complete source first calibrates $\mu$ by bisection so that rounding produces the target mean count. This excerpt runs every realized wager — without an arbitrary loop cap in the reported experiment — and computes CVaR from the exact upper 5% by rank.*
+*The complete source first calibrates $\mu$ by bisection so that rounding produces the target mean count. `count_cap` is a sentinel set orders of magnitude above any realized draw in the reported experiment, so it never actively constrains `n`; the 5,000-count cap discussed in the main post belonged only to the separate review harness. This excerpt therefore runs every realized wager and computes CVaR from the exact upper 5% by rank.*
