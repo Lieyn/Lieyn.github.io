@@ -1,5 +1,5 @@
 ---
-title: "The Subtle Ramifications of Digital Overstimulation on Financial Decisions"
+title: "Gambling & Social Media"
 date: 2026-03-25
 draft: false
 math: false
@@ -12,6 +12,9 @@ ShowWordCount: false
 cover:
   hidden: true
 ---
+## Preface
+
+An essay I wrote, refined and revised for better clarity. This was a I-Search paper essay in which I was exploring the topic of digital content in social media, particularly regarding forms of gambling.
 
 ## Introduction
 
