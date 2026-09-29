@@ -1,6 +1,6 @@
 ---
 title: "Impulsivity and Gambling"
-subtitle: "A gambling simulation, a convex-order proof, and a counterexample that failed its reality check"
+description: "A gambling simulation, a convex-order proof, and a counterexample that failed its reality check"
 date: 2026-06-04
 draft: false
 math: true
@@ -14,93 +14,188 @@ cover:
   hidden: true
 ---
 
-> **Disclaimer** AI was used in parts of the writing and coding, along with assistance in tex. I believe the explanation of the results were more explicit with the help of AI. The following post gets pretty technical. 
+> **Disclaimer:** AI was used in the computational aspects and used to verify the analysis.
 
-## Post M3 Competition
+## After the M3 Challenge
 
-Following the 2026 Mathworks Modeling Challenge, a mathematics competition that incorporates both mathematical modeling and technical computing, I became more invested in the effects of gambling on individuals. During the competition, the central question – “Should society be concerned about online gambling and its continued growth?” – was broken down into three main parts: estimating disposable income, evaluating risk from demographics, and quantifying these predictions. Given that we only had 14 hours, there seemed to be so much more territory worth exploring post-comp.
+Following the 2026 MathWorks Math Modeling Challenge, a mathematics competition that incorporates both mathematical modeling and technical computing, I became more invested in the effects of gambling on individuals. During the competition, the central question – “Should society be concerned about online gambling and its continued growth?” – was broken down into three main parts: estimating disposable income, evaluating risk from demographics, and quantifying these predictions. Given that we only had 14 hours, there seemed to be so much more territory worth exploring post-comp.
 
-Harboring lingering thoughts towards the idea, I never looked back until my English teacher introduced an assignment called the [I-Search Essay](/posts/2026-03-25-impulsivity-isearch/), in which students get to pick a problem that means something to them. Immediately, I thought about the prevalence of “gambling” streams on the internet, particularly on social media platforms, where algorithms dominate and manipulate users’ interests. It seemed like everyone was gambling, whether it was on their health (peptide craze), sports, and even on non-trivial things like the weather. Prediction markets took the internet by storm, causing me to try and understand the effects of digital overstimulation on individuals, particularly adolescents.
+Gambling in all forms is extremely prevalent on the internet, particularly on social media platforms, where algorithms dominate and manipulate users’ interests. It seemed like everyone was gambling, whether it was on their health (peptide craze), sports, and even on non-trivial things like the weather. The concept of gambling is becoming trivialized, and heavily integrated in today's world.
 
-As technology develops, social media’s grip on our lives, especially scrolling algorithms, only increases. With that, prediction markets and other forms of gambling quickly rose in popularity, and waves of advertisements soon followed. The key variable involved in all these choices, which was what I discovered, was impatience. We can use:
- Hyperbolic discounting describes the present value of a delayed reward as
+I decided to approach "gambling" itself from another angle. Simply, it's a decision involving a risk, calculated or not. As a chess player, we often go through online phases called a "tilt". Often ending up in anger, the "tilt" has tormented all players alike, including famous grandmasters as well. It includes a severe rating loss and dip in performance, as we try to play more games, hoping to minimize our losses. This can be seen in many examples, such as videogames, real gambling even, and more. The feedback loop is notoriously common.
 
-$$
-V(D)=\frac{A}{1+kD},
-$$
+We can focus on immediate rewards versus future rewards in this context. Playing chess games later in a clearer mindset is a much more rational choice than immediately trying to compensate in the very moment. This impatience – spurred by cumulating losses – ties to an idea called discounting. A person who prefers €10 now to €15 next week is placing a high value on getting a reward immediately. Researchers study this preference through a concept called **delay discounting**: how much waiting reduces the appeal of a reward.
 
-where a larger $k$ denotes steeper discounting of delayed rewards. The functional form follows [Mazur (1987)](https://doi.org/10.4324/9781315825502-4); [Green and Myerson (2004)](https://doi.org/10.1037/0033-2909.130.5.769) provide a review. Objectively logged smartphone use has been correlated with delay discounting, although the evidence is correlational rather than causal ([Schulz van Endert and Mohr, 2020](https://doi.org/10.1371/journal.pone.0241383)). This analysis examines a conditional pathway: whether raising gambling frequency and the probability of post-loss stake escalation, as impatience increases, changes annual losses.
+That idea offers a possible starting point for thinking about gambling. Someone seeking an immediate reward might bet more frequently. After losing, they might also raise their next bet in an attempt to recover the money. But those are possible connections, not facts established by this simulation.
 
-An important qualification applies at the outset: the parameter $k$ performs no computational role in the model. An ordinal severity index $z\in\{0,1,2,3\}$ is used instead to assign assumed values of bet frequency and post-loss escalation; renaming $z$ would change nothing. The model therefore captures the conditional consequences of behavioral intensification, not an estimated causal model of hyperbolic discounting.
+Essentially, the question is more limited than it appears: if people bet more often and become more likely to raise their bets after losing, what happens to their yearly losses?
 
-## The model
-
-The four scenarios use annual bet counts
+The equation behind this behavioral idea is called **hyperbolic discounting**:
 
 $$
-N(z)=\operatorname{round}(23\cdot1.5^z)=\{23,34,52,78\}
+V(D)=\frac{A}{1+kD}.
 $$
 
-and probabilities that a loss triggers an elevated next stake of
+Here, $A$ is the reward offered, $D$ is the wait, and $V(D)$ is how valuable that reward feels now. The parameter $k$ describes how strongly waiting reduces its appeal. For an illustrative example, a €15 reward arriving in one week has a present value of €12.50 when $k=0.2$ per week, but €7.50 when $k=1$ per week. The larger $k$ makes the immediate €10 more attractive.
+
+This equation comes from the delay-discounting literature (Mazur, 1987; Green and Myerson, 2004). Research has also found an association between logged smartphone use and delay discounting (Schulz van Endert and Mohr, 2020), but an association does not establish which causes which.
+
+Crucially, $k$ is background motivation, not an input to the gambling simulation; there is no computational role in the model. We use four assumed activity levels, indexed by $z=0,1,2,3$. We can therefore categorize the model through behavioral intensification, not as a model of hyperbolic discounting or impatience.
+
+## Setting up the simulation
+
+We can simulate this by creating imaginary gamblers and establishing rules for their betting.
+The model uses four activity levels, ranging from 23 to 78 bets per year. In the higher-activity scenarios, a loss is also more likely to trigger a larger next bet.
+
+Normal bet sizes vary randomly, averaging €6.10. When a loss triggers a larger bet, the next bet is drawn from a range with an average 25% higher. It's a temporary increase.
+
+Every bet has a 50% chance of winning, but a win pays only $10/11$ of the stake while a loss forfeits all of it. Each win and loss is recorded, along with the net result for the year. We use a **Monte Carlo simulation** of 200,000 years per scenario.
+
+Some numbers were informed by published gambling research, but the changes between activity levels were assumptions chosen for the experiment. The main simulation also lets gamblers complete their scheduled bets without running out of money.
+
+The precise scenario settings are:
+
+| Scenario | Index $z$ | Annual bets $N$ | Probability that a loss triggers an elevated next bet |
+|---|---:|---:|---:|
+| Low | 0 | 23 | 5.0% |
+| Medium | 1 | 34 | 9.5% |
+| High | 2 | 52 | 17.4% |
+| Very high | 3 | 78 | 29.6% |
+
+“Very high” describes the highest activity level within this experiment; it does not correlate to severe gambling issues comparatively to the real world.
+
+Bet frequency follows $N(z)=\operatorname{round}(23\cdot1.5^z)$. The escalation probabilities come from doubling the *odds* at each level:
 
 $$
-p_C(z)=\{0.050,0.095,0.174,0.296\}.
-$$
-
-The escalation probabilities follow an odds-doubling rule,
-
-$$
-\operatorname{odds}(z)=\frac{1}{19}\,2^z,
-\qquad
+\operatorname{odds}(z)=\frac{2^z}{19},\qquad
 p_C(z)=\frac{\operatorname{odds}(z)}{1+\operatorname{odds}(z)}.
 $$
 
-Every bettor-year begins in the Normal state. A loss makes the *next* wager Elevated with probability $p_C(z)$; a win or a loss that does not trigger escalation makes the next wager Normal. Thus an Elevated state can continue only when each preceding wager loses and independently triggers another escalation.
+Odds and probability are different: odds of 1 to 19 mean one triggering outcome for every nineteen non-triggering outcomes, giving a probability of $1/20=5\%$. These formulas provide a consistent way to increase activity across scenarios (we assume the increases).
 
-Normal stakes are independent gamma draws with shape 2 and mean 6.10 euros, a scale anchor set equal to the *median* stake reported by [Nelson et al. (2021)](https://doi.org/10.1556/2006.2021.00029), not their reported mean; Elevated stakes use the same shape and a mean $1.25\times$ as large. The 25% increase is only a plausibility anchor: [Zhang et al. (2024)](https://doi.org/10.1038/s41598-024-70738-3) estimated a 24.58% immediate next-bet response to a one-standard-deviation increase in the prior loss in slot-machine play, not sports betting. Each wager wins with probability $0.5$; a win earns $10/11$ of the stake and a loss forfeits it, for a house edge of $1/22$. The account data motivate scale only; every change across $z$ is assumed.
+Normal stakes follow a **gamma distribution**, a pattern that generates positive bet sizes, with many modest bets and some larger ones. Its shape parameter is 2 and its mean is €6.10. Elevated stakes have the same shape and mean €7.625. Each person starts in the normal state. After any bet, only a loss followed by an escalation trigger makes the next stake elevated. An elevated bet can be followed by another elevated bet, but the model does not repeatedly multiply the previous stake by 1.25.
 
-The homogeneous baseline has no bettor-level multiplier $S$; $S$ is introduced later only as an optional heterogeneity extension for the theorem and sensitivity sweep. Headline results use an unlimited bankroll, and the random-count experiment is uncapped.
+The €6.10 mean is anchored to the *median* stake reported by [Nelson et al. (2021)](https://doi.org/10.1556/2006.2021.00029), not their reported mean of €18.30. Likewise, the 25% increase is only loosely motivated by a finding about slot-machine play in [Zhang et al. (2024)](https://doi.org/10.1038/s41598-024-70738-3). It is not a measured response for the sports bettors represented here.
 
-Three claims are distinguished:
+For a stake $s$, the expected loss per wager is
 
-- **H1:** mean annual loss rises;
-- **H2:** absolute tail loss and fixed-threshold exceedance probabilities rise; and
-- **H3:** tail loss rises *faster proportionally* than mean loss.
-
-H3 can be written as
-
-<p>
 $$
-\frac{\mathrm{CVaR}_{95,H}}{\mathrm{CVaR}_{95,L}}
->
-\frac{\mathbb{E}[L_H]}{\mathbb{E}[L_L]},
+\tfrac12s-\tfrac12\left(\tfrac{10}{11}s\right)=\frac{s}{22}.
 $$
-</p>
 
-where $\mathrm{CVaR}_{95}$ is the average loss among the worst 5% of simulated years.
+At a €6.10 stake, it is about €0.28. Each actual wager still either wins or loses.
 
-## Hypothesis Rejected 
+## What counts as a bad outcome?
 
-The baseline simulation drew 200,000 bettor-years per scenario. Mean loss rose from 6.48 to 22.52, while $\mathrm{CVaR}_{95}$ rose from 77.94 to 159.51. H1 and the absolute-CVaR part of H2 held. H3 did not: the mean rose $3.48\times$, compared with only $2.05\times$ for CVaR. Equivalently, $\mathrm{CVaR}_{95}/\mathbb{E}[L]$ fell from 12.03 to 7.08. Across twenty independent batches of 10,000 paths, the 95% Monte Carlo intervals were $[6.33,6.62]$ and $[22.26,22.79]$ for the Low and Very-high means, and $[77.58,78.26]$ and $[158.77,160.19]$ for their CVaRs. These intervals measure simulation precision, not uncertainty in the behavioral assumptions.
+Looking only at the average can hide important differences. Two groups could lose the same amount on average, while one group has a small number of people who lose much more than everyone else.
 
-![Absolute mean and tail losses increase across scenarios, but CVaR relative to the mean declines. Values come from 200,000 simulated bettor-years per scenario.](baseline_reversal.png)
+To examine those bad outcomes, imagine sorting 100 yearly results from best to worst. Take the five worst years and calculate their average loss. This gives a measure of how expensive a particularly bad year can be.
 
-This negative relative-tail result did not mean that harm disappeared. For fixed absolute-loss thresholds of 25, 50, and 100 euros, the Very-high to Low exceedance ratios were 1.64, 3.25, and 34.35. The thresholds are not validated measures of financial distress: 25 euros happens to equal the median net loss reported by Nelson et al., while 50 and 100 are round-number diagnostics. The point is distributional. Translating a loss distribution to the right can create a large jump past any fixed threshold even while its dispersion relative to the mean falls.
+The technical name is **CVaR95**. Here, it simply means the average loss in the worst 5% of simulated years. These extreme outcomes lie at one end, or “tail,” of the results, which is where the term *tail risk* comes from.
 
-That distinction kept the model tied to gambling rather than turning it into an exercise in variance arithmetic. Relative tail shape and absolute exposure answer different questions. A household can face a much larger chance of crossing a consequential loss level even when normalized CVaR declines.
+The simulation tested three predictions:
 
-A separate 100,000-path stylized bankroll sensitivity used its own common-random-number run. Its unlimited-bankroll relative-tail ratio was 0.584, rather than the headline run's 0.589; at the tightest starting bankroll—$25\times$ the mean stake, or about 152.50 euros—it fell to 0.563, and 4.16% of Very-high paths exhausted the bankroll. The floor truncated the Very-high arm's tail more strongly, so finite bankroll made H3 harder to satisfy, not easier.
+1. Average yearly losses would increase.
+2. Losses in the worst years, and the chance of crossing specific loss amounts, would increase.
+3. Losses in the worst years would grow proportionally faster than average losses.
 
-## Effect Hidden by Simulation Noise
+The third prediction is stronger than the first two. If average losses doubled, it would require losses in the worst years to more than double.
 
-Before interpreting the decomposition, it was necessary to establish whether post-loss escalation contributed any effect at all. In a 500,000-path-per-case common-random-number decomposition, holding escalation at its Low value and increasing annual bets from 23 to 78 moved mean loss from 6.43 to 21.88 and CVaR from 78.08 to 153.24. Changing escalation alone at $N=23$ moved mean loss only to 6.62 and CVaR to 81.24—an effect of about 3.0% in simulation and 2.93% analytically. Rising frequency therefore accounts for almost all of the baseline change.
+The third prediction can be expressed with a single comparison:
 
-An early version used independent random seeds for the Low and High scenarios, making a small channel effect difficult to separate from Monte Carlo noise.
+$$
+Q=\frac{\mathrm{CVaR}_{95,\text{high}}/\mathrm{CVaR}_{95,\text{low}}}
+{\mathbb{E}[L_\text{high}]/\mathbb{E}[L_\text{low}]}.
+$$
 
-Common random numbers (CRN) were adopted instead: Low and High scenarios reuse matched underlying random draws, so the comparison removes much of the variation shared by both. The decomposition implements that pairing by passing the same `common_seed` to every case:
+$L$ represents annual net loss, $\mathbb{E}[L]$ means average annual loss, and the subscripts "high" and "low" identify the higher- and lower-activity scenarios. If $Q>1$, worst-tail losses grow faster proportionally than mean losses. If $Q<1$, mean losses grow faster. This lets all the later experiments use the same test.
+
+Annual net loss subtracts winnings from lost stakes. A person who ends the year ahead has a negative net loss. The reported average includes those winning years too.
+
+## The prediction that failed
+
+The comparison between the lowest and highest activity levels showed:
+
+| Measure | Lower activity | Higher activity |
+|---|---:|---:|
+| Bets per year | 23 | 78 |
+| Average yearly loss | €6.48 | €22.52 |
+| Average loss in the worst 5% of years | €77.94 | €159.51 |
+
+Both types of loss increased. But average losses became about **3.48 times as large**, while losses in the worst years became about **2.05 times as large**.
+
+Using the baseline results gives
+
+$$
+Q\approx\frac{2.05}{3.48}=0.589.
+$$
+
+That is below 1, so the third prediction fails in the baseline. The two quantities being compared both increased; the ratio measures which increased faster.
+
+The really bad years became more expensive, but they did not grow as quickly as the average.
+
+Another way to express the difference is to compare a bad year with the average in its own group. In the lower-activity scenario, the average loss in the worst years was about 12 times the overall average loss. In the higher-activity scenario, it was about 7 times the overall average.
+
+There is no contradiction: €159.51 is a larger loss than €77.94, but it is a smaller multiple of an average that has itself risen substantially.
+
+![Left: average yearly loss and average loss in the worst 5% of years both rise with activity. Right: the worst-5% loss as a multiple of the average falls from about 12 times to about 7 times. 200,000 simulated years per scenario.](baseline_reversal.png)
+
+The threshold results provide another view:
+
+| Annual loss threshold | Probability in Very high divided by probability in Low |
+|---|---:|
+| More than €25 | 1.64 times |
+| More than €50 | 3.25 times |
+| More than €100 | 34.35 times |
+
+The chance of losing more than €100 also became roughly 34 times as high. That is a comparison between probabilities, not a claim that 34% of gamblers lost that amount. Nor is €100 a universal measure of financial hardship. It is one fixed amount used to compare the scenarios. (€25 was chosen because it matches the median yearly net loss that Nelson et al. found among real online sports bettors; €50 and €100 are round numbers.)
+
+A large probability ratio can arise when the starting probability is very small. These ratios alone do not tell the reader the percentage of gamblers crossing each threshold.
+
+This is why the failed third prediction does not mean harm went away. When the whole distribution of losses shifts toward bigger numbers, many more years land past a fixed line like €100, even though the spread relative to the average shrinks. The shape of the tail and the chance of a costly year answer different questions.
+
+A simulation is random, so its answers wobble slightly from run to run. To check how much, the 200,000 years were split into twenty separate batches of 10,000. The resulting 95% Monte Carlo intervals were:
+
+| Measurement | Low | Very high |
+|---|---:|---:|
+| Mean annual loss | €6.33–€6.62 | €22.26–€22.79 |
+| Average loss in worst 5% | €77.58–€78.26 | €158.77–€160.19 |
+
+These intervals describe how precisely the computer estimates the answers under the specified rules. They do not tell us whether those rules accurately describe real people.
+
+A separate experiment asked what changes when gamblers can run out of money, since the main simulation lets everyone keep betting no matter how much they have lost. With starting funds of about €152.50 (25 times the average normal bet), 4.16% of the Very-high simulated years exhausted those funds. The comparison ratio $Q$ fell from 0.584 without the restriction to 0.563 with it. This run used a separate set of random inputs, which explains why its unrestricted ratio differs slightly from the baseline's 0.589. Limiting available funds restricted the highest losses more strongly in the higher-activity group, making the third prediction harder to satisfy.
+
+## Why more bets change the role of luck
+
+Think about flipping a coin four times. Three heads would make heads 75% of the results. A short streak can dominate such a small sample.
+
+Now imagine 1,000 flips. Streaks still happen, but the percentage of heads will usually be closer to 50%. Any one streak matters less compared with the total.
+
+Repeated bets have a similar averaging effect in this model. Random wins and losses have more opportunities to offset one another, while each additional bet adds expected loss because of the house edge.
+
+This does not mean someone who has lost several times is “due” to win. The next bet still has a 50% chance of winning. The averaging happens across many possible sequences, not because the game remembers earlier losses and compensates for them.
+
+With more bets, luck contributes less relative to the growing average loss. The total losses can still become larger and more spread out in euros. What becomes smaller is their spread **compared with the average**.
+
+## Which behavior caused most of the increase?
+
+Two things changed between the Low and Very-high scenarios: betting frequency and the chance of raising the next bet after a loss. To separate their effects, the simulation changed one at a time.
+
+This experiment was a separate run with its own random draws, so its Low starting point (€6.43) differs slightly from the €6.48 in the earlier table. Increasing only the number of bets moved average losses from about €6.43 to €21.88. Increasing only the chance of a larger bet after losing moved them from about €6.43 to €6.62.
+
+Under these rules, frequency accounted for most of the increase. Raising bets after losses also increased losses, but its effect was much smaller. A different, more aggressive rule for chasing losses could behave differently.
+
+Measuring that small effect required a fair comparison. If two simulations receive different sequences of luck, the difference in their results can partly reflect luck rather than behavior. An early version of the code made exactly this mistake: it gave the Low and High scenarios independent random seeds, and the small escalation effect was buried in the noise.
+
+The solution was to reuse matched random inputs across the comparisons. This is called **common random numbers**—roughly, comparing two strategies against the same underlying luck. It made the small effect easier to measure without making the effect itself larger.
+
+## How the Python code separates the two effects
+
+The Python experiment uses four cases: the Low reference, a frequency-only change, an escalation-only change, and both changes together. We can use a **decomposition**: changing the details separately to see which explains the result.
+
+Here is the function that does it, from `impatience_simulation.py`. It relies on other parts of that program (such as `Scenario` and `simulate_paths`), so it won't run on its own.
 
 ```python
-# impatience_simulation.py, lines 306–327
 def decomposition(
     spec: ModelSpec, scenarios: list[Scenario], n_paths: int = 500_000
 ) -> pd.DataFrame:
@@ -133,51 +228,113 @@ def decomposition(
     return table
 ```
 
-In a separate Very-high-frequency diagnostic with $N=78$, turning elevation on ($c:1.00\rightarrow1.25$) increased mean loss by 3.64%, against 3.66% analytically. CRN reduced the variance of that paired estimate by about $223\times$, equivalent to a $\sqrt{223}\approx14.9\times$ reduction in standard error. This 3.64% diagnostic is not the same comparison as the approximately 3.0% escalation-only decomposition at $N=23$. CRN did not make either effect larger; it made a small effect measurable.
+The code creates four instruction sets and passes each to the same simulator. `high.bets` selects the higher bet count; `low.p_chase` keeps the lower probability of increasing a stake after a loss. In the escalation-only case, those choices reverse. The `high.x` field is just the scenario's position on the $z$ scale from earlier (Very high is $z=3$). It is carried along for bookkeeping, is not a measured impatience value, and the simulator never uses it.
 
-## From $1/\sqrt{N}$ intuition to a theorem {#from-1-sqrt-n-intuition-to-a-theorem}
+`n_paths = 500_000` means half a million simulated years for each case. `summarize(losses)` calculates statistics from the resulting losses. Finally, `to_csv` saves a table that can be inspected separately from the program.
 
-Suppose per-bet losses $Y_1,\ldots,Y_N$ are independent and identically distributed, with positive mean $\mu$ and variance $\sigma^2$. Total loss has mean $N\mu$ and standard deviation $\sqrt{N}\sigma$. Relative dispersion is therefore
+The shared `common_seed` starts each case from the same reproducible random-number seed. In the underlying simulator, how draws are generated and aligned determines the pairing. Reusing a seed is useful when it preserves matched random inputs; it does not by itself guarantee matching in every possible simulation design.
+
+We get these results:
+
+| Case | Bets per year | Escalation setting | Mean loss | CVaR95 |
+|---|---:|---|---:|---:|
+| Low reference | 23 | Low | €6.43 | €78.08 |
+| Frequency only | 78 | Low | €21.88 | €153.24 |
+| Escalation only | 23 | Very high | €6.62 | €81.24 |
+
+The program also runs the combined case (both changes at once), but that row is left out here. The Very-high numbers in the earlier baseline table look similar, but they came from a different run with different random draws, so they should not be read as this table's fourth row.
+
+The escalation-only mean-loss increase at 23 bets was about 3.0%, close to the 2.93% predicted by working the formula out by hand (an *analytical* calculation, with no simulation). That agreement is a check that the simulator is doing what it should. In a separate diagnostic at 78 bets, turning the elevated-stake multiplier from 1.00 to 1.25 increased mean loss by 3.64%, compared with 3.66% analytically.
+
+These are different comparisons. The first changes how often escalation is triggered; the second switches the elevated-stake increase on. Their percentages should not be treated as interchangeable.
+
+In the 78-bet diagnostic, matching random inputs reduced the variance of the estimated difference by about 223 times. That corresponds to roughly $\sqrt{223}=14.9$ times smaller standard error—a measure of the estimate's random fluctuation. The improvement made a small effect easier to detect; it did not change the underlying effect.
+
+## Was the result just a coincidence?
+
+The project tested 162 combinations of assumptions, including different bet-size patterns and different increases after losses. None produced worst-year losses that grew proportionally faster than average losses. Many of these tests reflected the same averaging mechanism, so they should not be treated as 162 independent discoveries.
+
+A mathematical proof provided a stronger result for a simpler version of the model. When bets are independent, follow the same rules, and only their number increases, the ratio of worst-tail loss to average loss cannot rise under the stated conditions.
+
+The proof has a limited scope. It does not cover the full model, where losing can change the size of the next bet. The more complicated model was examined through simulation.
+
+## The mathematics behind the averaging effect
+
+This section gives the details behind the summary above: first the proof, then the 162 designs.
+
+Let $Y_t$ be the net loss on bet $t$. Suppose bets are independent and follow the same distribution, with positive average loss $\mu$ and standard deviation $\sigma$. Standard deviation measures how widely outcomes vary around their average.
+
+After $N$ bets,
 
 $$
-\frac{\operatorname{SD}\left(\sum_{t=1}^N Y_t\right)}{\mathbb{E}\left[\sum_{t=1}^N Y_t\right]}
+\mathbb{E}\left[\sum_{t=1}^{N}Y_t\right]=N\mu,
+\qquad
+\operatorname{SD}\left(\sum_{t=1}^{N}Y_t\right)=\sqrt{N}\sigma.
+$$
+
+Average loss grows in proportion to the number of bets. The standard deviation grows more slowly, in proportion to its square root. Four times as many bets therefore produces four times the average loss but only twice the standard deviation, under these assumptions.
+
+Dividing one by the other gives
+
+$$
+\frac{\operatorname{SD}(\text{total loss})}{\mathbb{E}[\text{total loss}]}
 =\frac{\sigma}{\mu\sqrt{N}}.
 $$
 
-More bets raise expected loss linearly while diversifying per-bet outcome noise at the familiar $1/\sqrt{N}$ rate. This is the Gaussian intuition behind the figure above.
+The spread relative to the average shrinks as $N$ increases. This explains the mechanism, but standard deviation and CVaR measure different things. A separate argument is needed to prove the result for CVaR itself.
 
-A 162-design sensitivity sweep supported that mechanism numerically. The stake distribution, escalation size, frequency growth, escalation-odds growth, and between-bettor stake heterogeneity were each varied. Each design used 30,000 paths per arm with common random numbers; all point estimates remained below one, with a maximum relative-tail ratio of 0.839. In 81 designs, a bettor-level stake scale $S$ was added: lognormal with median 6.10 euros, truncated at Nelson et al.'s observed maximum of 1,930.87 euros, with $\sigma=1.484$ calibrated so that the truncated mean equaled the reported 18.30 euros. H3 held in none of the 162 designs. These were not, however, 162 independent confirmations: frequency growth alone explained 92.18% of the variation in the relative-tail ratio, and the correlation between that ratio and $1/\sqrt{N_H/N_L}$ was 0.9728. Most rows restate the same averaging effect.
-
-The theorem is stronger than the Gaussian story, but narrower than the full simulation. Let $Y_t$ be i.i.d. per-bet losses with $0<\mu=\mathbb{E}[Y_t]<\infty$. For this extension only, let $S\ge0$ be an integrable bettor-level stake scale, independent of every $Y_t$, and define
+For that argument, let $S$ represent a person's overall betting scale, so annual loss becomes
 
 $$
-L_N=S\sum_{t=1}^N Y_t.
+L_N=S\sum_{t=1}^{N}Y_t.
 $$
 
-Then, whenever the relevant CVaR is finite,
+$S$ can differ between people, but it must be nonnegative, independent of the per-bet outcomes, and drawn from the same distribution when comparing different bet counts. Assume its mean is positive and finite, the per-bet mean is positive and finite, and the relevant CVaR is finite.
+
+Then the ratio
 
 $$
 R_N=\frac{\mathrm{CVaR}_\alpha(L_N)}{\mathbb{E}[L_N]}
-\quad\text{is nonincreasing in } N.
 $$
 
-The proof is short. The sample means $\bar{Y}_N=N^{-1}\sum_{t=1}^N Y_t$ decrease in convex order as $N$ increases. If $X\preceq_{cx}Z$, multiplying both by the same independent nonnegative $S$ preserves that ordering: condition on $S=s$ and observe that $x\mapsto\phi(sx)$ remains convex for every convex $\phi$. CVaR respects convex order because it is a law-invariant coherent risk measure, and it is positively homogeneous. Homogeneity gives
+cannot increase with $N$. At $\alpha=0.95$, the numerator is the worst-5% average used throughout this post.
+
+The proof relies on **convex order**, a precise way to say that one distribution has less spread than another while keeping the same mean. Averages of more independent, identically distributed bets decrease in this order. Multiplying by the same independent nonnegative scale $S$ preserves it, and CVaR respects the ordering. Since CVaR scales proportionally when all losses are multiplied by a positive constant,
 
 $$
-R_N
-=\mathrm{CVaR}_\alpha\!\left(\frac{L_N}{\mathbb{E}[L_N]}\right)
-=\mathrm{CVaR}_\alpha\!\left(\frac{S\bar{Y}_N}{\mathbb{E}[S]\mu}\right),
+R_N=\mathrm{CVaR}_\alpha\left(
+\frac{S\bar{Y}_N}{\mathbb{E}[S]\mu}
+\right),\qquad
+\bar{Y}_N=\frac{1}{N}\sum_{t=1}^{N}Y_t,
 $$
 
-and convex-order monotonicity then gives $R_{N+1}\le R_N$.
-This upgrades the simulation-based finding to a structural result for the frequency-only i.i.d. submodel, even with scenario-invariant independent stake heterogeneity. It does *not* prove the result for the full two-state process, where post-loss escalation makes wagers state-dependent and changes across scenarios. That extension remains numerical.
+which yields $R_{N+1}\le R_N$.
 
-## Breaking the theorem
+In plain language, averaging more independent bets cannot make the worst tail larger relative to the average under these conditions. This is a statement about the simplified model. The loss-triggered stake changes in the full simulation create dependence between wagers and fall outside that proof.
 
-The proposition also suggests where to look for a counterexample: alter the normalized loss distribution itself. Fixed bet counts were replaced with rounded lognormal counts, whose locations preserved the same scenario means, 23 and 78, while their dispersion parameters were allowed to differ. An exact C++ wager loop was used because, at $\sigma_H=2.2$, the rare paths with enormous uncapped counts are precisely the paths that drive CVaR; a normal approximation or an arbitrary loop cap can erase the effect under study.
+Returning to the 162 designs in more detail: this sensitivity sweep explored the fuller model numerically, with 30,000 simulated years for each group (low and high activity) in each design. It varied stake distributions, escalation sizes, frequency growth, escalation-odds growth, and differences in betting scale between people. All reported estimates of $Q$ stayed below 1; the largest was 0.839.
+
+In 81 of the designs, each simulated person also got their own betting scale $S$ (the multiplier from the proof above), so some people bet much bigger amounts than others. $S$ followed a lognormal distribution with median €6.10, cut off at €1,930.87 (the largest stake Nelson et al. observed), and tuned with $\sigma\approx1.484$ so its mean matched their reported €18.30. The baseline simulation does not have this: there, everyone bets on the same scale.
+
+Frequency growth explained 92.18% of the variation in $Q$ across the tested designs, and $Q$ had a correlation of 0.9728 with $1/\sqrt{N_\text{high}/N_\text{low}}$, the averaging factor from the formula above. In other words, most of the 162 results are the same averaging effect showing up again. These patterns support the averaging explanation within the sweep. They do not represent independent evidence that the model fits real-world behavior.
+
+## Could the result reverse?
+
+So far, every person within an activity level had the same number of annual bets. But real gamblers differ: some bet occasionally, while others bet extremely often.
+
+The next experiment allowed bet counts to vary between people. It asked what happens if the higher-activity group also has much greater differences between its members, including a small number of people making enormous numbers of bets.
+
+That change could reverse the result. The extreme gamblers could push losses in the worst years up faster than average losses.
+
+## The C++ experiment
+
+The variable-count experiment draws annual bet counts from a **lognormal distribution**. This produces positive values with a long upper tail: many modest counts and a few extremely large ones. Its dispersion parameter controls how unequal those counts become.
+
+The Python simulation handled everything up to this point, where every person in a group made the same number of bets. The follow-up C++ experiment executes every wager in the variable-count scenarios, including the rare years with enormous counts. C++ is suited to intensive loops, although Python could also implement this model. The methodological point is to simulate those rare paths directly rather than replace them with an approximation or cut them off, because those few years with enormous bet counts are exactly what drives the worst-5% average.
+
+Here is the core loop from `random_count_exact.cpp`. The random generators, parameters, storage, and count calibration are defined elsewhere in the complete program.
 
 ```cpp
-// random_count_exact.cpp, lines 77–108 (inside simulate)
 for (std::size_t i = 0; i < paths; ++i) {
   std::uint64_t n;
   if (sigma_count == 0.0) {
@@ -212,67 +369,89 @@ long double tail_sum = std::accumulate(
 double cvar95 = static_cast<double>(tail_sum / (paths - tail_start));
 ```
 
-*The complete source first calibrates $\mu$ by bisection so that rounding produces the target mean count. `count_cap` is a sentinel set orders of magnitude above any realized draw in the reported experiment, so it never actively constrains `n`; the 5,000-count cap discussed below belonged only to the separate review harness. This excerpt therefore runs every realized wager and computes CVaR from the exact upper 5% by rank.*
+The outer loop runs one simulated year at a time. It first chooses that year's number of bets, `n`. When `sigma_count` is zero, the count is fixed; otherwise `exp(...)` generates a lognormal count, which is rounded and kept at least 1.
 
-With equal dispersion $\sigma_L=\sigma_H=1.0$, the eight-run mean relative-tail ratio was 0.644, compared with 0.589 under fixed counts. Holding $\sigma_L=1.0$ and increasing $\sigma_H$ to 1.8 raised it to 0.967. At $\sigma_H=2.2$, it crossed the H3 boundary at 1.117. A second crossing specification, $(\sigma_L,\sigma_H)=(0.5,2.0)$, reached 1.222. Eight independent exact wager-loop replications of 200,000 paths per arm confirmed the two crossings.
+The inner loop carries out all `n` bets. For each bet, it chooses a normal or elevated stake, generates a win or loss, updates the net balance, and decides whether the next bet will be elevated. The expression `(!win) && (...)` means both conditions must hold: the current wager loses, and a random draw triggers escalation.
 
-![Mean-preserved exact-count experiment with sigma L equal to 1.0. Error bars show the between-replication standard deviation across eight runs of 200,000 paths per arm. A value above one satisfies H3.](dispersion_boundary.png)
+`net` records profit, so `-net` converts that to loss. At the end, the program sorts annual losses from smallest to largest and averages the final 5%. With 200,000 years, that means averaging the 10,000 largest losses.
 
-Mathematically, this is a valid existence result: scenario-dependent count dispersion can overpower frequency diversification. Empirically, it created a new problem. For a lognormal variable,
+The complete program calibrates `mu_count` by bisection—repeatedly narrowing a search interval—so rounded counts have the intended mean. The visible `count_cap` is a safety limit set far above every count that actually came up in the reported runs, so it never cut anything off. That matters because a different cap did cause a real problem, described at the end of the next section.
+
+## Reversed
+
+The first variable-count experiments preserved group mean counts of 23 and 78 while allowing their dispersion to differ. Larger $\sigma$ means a wider spread in log counts and a more unequal count distribution.
+
+| Count pattern | Low-group dispersion | High-group dispersion | Reported $Q$ | Worst-tail losses grew faster proportionally? |
+|---|---:|---:|---:|---|
+| Fixed counts, baseline | — | — | 0.589 | No |
+| Equally dispersed random counts | 1.0 | 1.0 | 0.644 | No |
+| Wider high-group counts | 1.0 | 1.8 | 0.967 | No |
+| Still wider high-group counts | 1.0 | 2.2 | 1.117 | Yes |
+| Alternative unequal-dispersion case | 0.5 | 2.0 | 1.222 | Yes |
+
+The random-count values are averages across eight independent runs, each with 200,000 simulated years per group. The two values above 1 show that the third prediction can hold after changing the distribution of betting activity.
+
+![Q as the high-activity group's bet counts become more unequal, with the low group's spread fixed at 1.0 and both group averages fixed at 23 and 78 bets. Q passes 1, reversing the baseline result, only at the widest spread. Each point averages eight runs of 200,000 simulated years per group.](dispersion_boundary.png)
+
+This does not contradict the proof: the proof assumed everyone in a group makes the same number of bets, and these experiments break that assumption. A much more unequal high-activity group can have extreme losses driven by a small number of very frequent gamblers.
+
+## Reversal and plausible behavior
+
+However, the examples that achieved this created a problem when compared with the available evidence.
+
+To see why, consider ten people: nine make 10 bets each, and one makes 690. Their average is 78 bets per person, even though almost everyone makes just 10. The **median**, or middle value, is 10. A few extreme values can make the average describe the group poorly.
+
+Something similar happened in the reversal experiment. Keeping the high-activity average at 78 bets pushed the implied median down to about 7—below the lower-activity group's median of about 14 (its average of 23 with a spread of 1.0). The supposedly higher-activity group then had a middle person who bet less often.
+
+Keeping the middle person at 78 bets instead pushed the average much higher. In the tested reversal cases, average counts reached roughly 576 or 877 bets per year, well above the approximately 139 bets a year that real bettors averaged in Nelson et al.'s data (92.8 bets over eight months, scaled up to twelve).
+
+The relationship comes from the lognormal formulas:
 
 $$
-\operatorname{median}(N)=\operatorname{mean}(N)e^{-\sigma^2/2}.
+\operatorname{median}(N)=\operatorname{mean}(N)e^{-\sigma^2/2},
+\qquad
+\operatorname{mean}(N)=\operatorname{median}(N)e^{\sigma^2/2}.
 $$
 
-Preserving a High-scenario mean of 78 at $\sigma_H=2.2$ implies a median of only 6.9 bets. The typical High-scenario bettor then bets about half as often as the mean-preserved Low bettor, whose implied median is 14.0. The behavioral premise is inverted at the median.
+These are formulas for the underlying continuous distribution; the simulation rounds counts to whole bets. They explain why preserving the mean pushes the median down as dispersion increases, while preserving the median pushes the mean up.
 
-Preserving the median instead does not remove the crossing. Uncapped reruns gave relative-tail ratios near 1.15 at $(1.0,2.2)$ and 1.08 at $(0.5,2.0)$. But the implausibility moves into the mean:
+![The three high-group spreads tested. Left: keeping the average at 78 pushes the typical (median) bettor down to 7–15 bets a year. Right: keeping the median at 78 pushes the average up to 394–877 bets a year. Orange points are the settings where the result reversed. The gray reference lines are Nelson et al.'s eight-month figures scaled to a year.](moment_squeeze.png)
 
-$$
-\mathbb{E}[N]=\operatorname{median}(N)e^{\sigma^2/2}.
-$$
+| High-group dispersion | Implied mean if its median is fixed at 78 |
+|---|---:|
+| 1.8 | About 394 bets/year |
+| 2.0 | About 576 bets/year |
+| 2.2 | About 877 bets/year |
 
-A preserved High-scenario median of 78 implies mean annual counts of 394, 576, and 877 at $\sigma_H=1.8, 2.0,$ and $2.2$. Nelson et al. reported a pooled mean of 92.8 bets over eight months, about 139 when mechanically annualized. The crossing cases require four to six times that annualized mean.
+Preserving the median did not remove the reversal. Reruns with no limit on bet counts produced $Q$ near 1.15 for dispersions $(1.0,2.2)$ and near 1.08 for $(0.5,2.0)$. The difficulty moved into the implied average activity.
 
-![The moment squeeze across the three reported dispersion specifications. Blue marks the non-crossing case; coral marks the two crossings. Preserving mean count forces the implied median downward, while preserving median count forces the implied mean upward. Nelson's pooled eight-month median and mean are annualized only as scale references, not as a fitted scenario distribution.](moment_squeeze.png)
+The comparison data do show substantial differences between gamblers. Nelson et al.'s pooled eight-month sample had a mean count of 92.80, standard deviation of 374.12, and median of 15. Matching a lognormal distribution to the mean and standard deviation gives a dispersion parameter of about 1.69. Giving both groups that dispersion produced $Q=0.733$, which did not reverse the result.
 
-The pooled account data show substantial heterogeneity. Direct inspection of [Nelson et al.'s Table 2](https://doi.org/10.1556/2006.2021.00029) shows that, over the pooled eight-month window, bet count had mean 92.80, SD 374.12, and median 15; median net loss was 25 euros. The count mean and SD imply a moment-matched lognormal $\sigma\approx1.69$. In the explicit equal-dispersion $(1.69,1.69)$ configuration, the eight-run mean relative-tail ratio was 0.733, not a crossing. More importantly, pooled dispersion says nothing about whether dispersion widens with impatience: the counterexample remains mathematically live and empirically unverified.
+The missing evidence is whether dispersion itself increases with measured impatience. Nelson et al.'s sample pools all bettors together, so it shows how varied people are overall, but not whether more impatient people are *more* varied, which is what the reversal needs.
 
-One debugging episode sharpened this conclusion. During revision, an AI review pass reported that a median-preserved rerun erased the crossing. A second AI-assisted check could not reproduce that result and instead reproduced the crossing. That disagreement prompted an inspection of both test harnesses: the first review harness, not the research package, capped annual counts at 5,000. At $\sigma_H=2.2$, the cap removed precisely the rare high-count paths that drive CVaR. An uncapped rerun restored the crossing. The disagreement did not rescue the empirical case; it replaced a false objection with the more precise moment-squeeze objection.
+Those comparisons raise questions about whether the tested scenarios describe real behavior. They do not prove that such groups cannot exist. The available data do not establish how betting patterns differ with measured impatience.
 
-## What survived
+A coding check also mattered here. While revising, an AI-assisted review ran its own version of the median-preserving test and reported that the reversal disappeared. A second check could not reproduce that and found the reversal again. Comparing the two test programs showed why: the first review program (not the research code) stopped counting at 5,000 bets per year, which removed precisely the rare, very high-activity years driving the result. Removing that limit restored the reversal. The mathematical possibility survived; the question of realism remained.
 
-The original intuition was partly right. Under the assumed scenarios, greater behavioral intensity raises mean loss, absolute CVaR, and the chance of passing fixed absolute-loss thresholds. But greater frequency alone can reduce tail loss *relative to the mean* because repeated wagers average away outcome noise. In the restricted i.i.d. model, convex order makes that statement exact.
+## Revelations and conclusions
 
-H3 is still reachable in principle. Within the tested lognormal-count family, however, every specification that crossed H3 forced either typical betting activity or mean betting activity outside the empirically plausible range. Preserving one moment merely moved the problem into another.
+Under the model's assumptions, more betting leads to larger average losses, more expensive bad years, and a greater chance of crossing fixed loss amounts. At the same time, the worst outcomes can become smaller relative to the rising average because repeated bets reduce the relative influence of luck.
 
-The model's scale also limits the conclusion. The Very-high scenario uses 78 bets per year and mean loss of 22.52 euros, below Nelson's pooled mean activity over only eight months and near its reported median net loss of 25 euros. This simulation does not represent the severe household-harm cases discussed in broader gambling research such as [Baker et al. (2026)](https://www.sciencedirect.com/science/article/abs/pii/S0304405X26001017). It studies a distributional mechanism among conditional bettors, not bankruptcy or population-level welfare.
+This is a limited model of gambling losses, not a prediction of bankruptcy or severe household harm (for research on that, see [Baker et al., 2026](https://www.sciencedirect.com/science/article/abs/pii/S0304405X26001017)). Its highest baseline activity level is only 78 bets per year, with an average loss of €22.52. It also does not establish that impatience causes people to gamble more.
 
-The next empirical question is narrower than the one that motivated this analysis: does measured impatience predict not only the average level of betting activity, but also its dispersion? Until linked data measure both, the most defensible conclusion is a boundary statement: scenario-dependent count dispersion can reverse normalized tail risk mathematically, but the tested reversals do not yet pass a joint mean-and-median reality check.
+The delay-discounting research makes it plausible that impatience plays a role in how often people bet, but this model assumes that link rather than testing it. What the model does show is what follows *if* it holds: more frequent betting costs more money in every sense measured here, and looking only at average losses would have missed most of the story: the average, the worst years, and the chance of crossing a fixed loss each moved differently.
 
-> **Reproducibility.** The numerical claims in this post trace to a Python baseline/robustness simulation and an exact C++ random-count experiment. Source excerpts with line-number citations from both files are shown in the [code walkthrough](/posts/tail-risk-code/). Monte Carlo precision does not substitute for uncertainty about the behavioral assumptions.
->
-## Conclusion
+That is why "smoother" should not be confused with "better." Someone who bets more often has yearly losses that are more predictable relative to their average, but that average is much larger.
 
-Under the assumptions of this model, greater betting activity raises harm in the most direct sense. People in the Very-high scenario lose more money on average, lose more in the worst 5% of simulated years, and are much more likely to cross fixed loss thresholds such as €50 or €100. The model does not find that more betting becomes safe or less damaging.
+The next question is narrower than the one that started this project: does measured impatience predict not only how often people bet on average, but also how *unequal* betting becomes within a group? Until data measure both, the fairest conclusion is that a reversal is mathematically possible, but the tested versions do not pass a reality check on both the average and the median.
 
-The less intuitive result concerns *relative* risk. Average loss rose by \(3.48\times\), while the average loss in the worst 5% of years rose by \(2.05\times\). Bad years therefore became more expensive in euros, but they became less extreme compared with the new, higher average. In other words, the distribution shifted toward larger losses while becoming less spread out relative to its center.
+## Reproducibility and references
 
-The reason is similar to the difference between flipping a coin 5 times and flipping it 100 times. With only 5 flips, a short streak can dominate the result: getting 4 heads feels unusually high. With 100 flips, streaks still occur, but they matter less relative to the total number of flips. The final proportion usually sits closer to 50%. In this model, each additional wager adds expected loss because the game has a house edge. At the same time, more wagers give random wins and losses more opportunities to offset one another. The house edge becomes clearer, while luck makes up a smaller share of the total outcome.
+The numbers above come from two programs: a Python simulation (the baseline, bankroll, decomposition, and 162-design checks) and a C++ program (the random bet-count experiments). The excerpts shown above are pieces of those programs and will not run on their own. The [code walkthrough]({{< relref "tail-risk-code.md" >}}) is linked for the implementation context.
 
-That is why “smoother” should not be confused with “better.” A bettor who places more wagers may experience annual losses that are more predictable relative to their average loss, but that average loss is also much larger. The model’s post-loss escalation rule adds some harm, yet most of the increase comes from frequency itself.
-
-The convex-order result shows that this pattern is not just an accident of one simulation. In the restricted model of independent bets with a fixed distribution of betting scale, normalized tail risk cannot rise as the number of bets rises. The fuller simulation is more complicated, but it follows the same pattern across the tested assumptions.
-
-The counterexample shows the boundary of that result. Relative tail risk can rise if a high-activity scenario also has far more unequal bet counts, with a small number of people placing extraordinarily many wagers. In the tested lognormal cases, however, making that reversal occur required an implausible tradeoff: either the typical high-activity bettor placed fewer bets than the typical low-activity bettor, or the mean high-activity count became far above the available data.
-
-This does not establish that impatience causes gambling losses, nor does it describe every form of gambling harm. It shows a narrower point: when betting frequency rises, absolute losses can become much worse even as the worst outcomes grow less extreme relative to the mean. To understand whether real behavioral differences reverse that pattern, the next step is data that link measured impatience to both the average *and the spread* of gambling activity.
-
-## References
-
-1. Mazur, J. E. (1987). [An adjusting procedure for studying delayed reinforcement.](https://doi.org/10.4324/9781315825502-4) In M. L. Commons, J. E. Mazur, J. A. Nevin, & H. Rachlin (Eds.), *Quantitative Analyses of Behavior, Vol. 5: The Effect of Delay and of Intervening Events on Reinforcement Value*, 55–73. Erlbaum.
-2. Green, L., & Myerson, J. (2004). [A discounting framework for choice with delayed and probabilistic rewards.](https://doi.org/10.1037/0033-2909.130.5.769) *Psychological Bulletin*, 130(5), 769–792.
-3. Schulz van Endert, T., & Mohr, P. N. C. (2020). [Likes and impulsivity: Investigating the relationship between actual smartphone use and delay discounting.](https://doi.org/10.1371/journal.pone.0241383) *PLOS ONE*, 15(11), e0241383.
-4. Nelson, S. E., Edson, T. C., Louderback, E. R., Tom, M. A., Grossman, A., & LaPlante, D. A. (2021). [Changes to the playing field: A contemporary study of actual European online sports betting.](https://doi.org/10.1556/2006.2021.00029) *Journal of Behavioral Addictions*, 10(3), 396–411.
-5. Zhang, K., Rights, J. D., Deng, X., Lesch, T., & Clark, L. (2024). [Within-session chasing of losses and wins in an online eCasino.](https://doi.org/10.1038/s41598-024-70738-3) *Scientific Reports*, 14, 20353.
-6. Baker, S. R., Balthrop, J., Johnson, M. J., Kotter, J. D., & Pisciotta, K. (2026). [Gambling away stability: Sports betting's impact on vulnerable households.](https://www.sciencedirect.com/science/article/abs/pii/S0304405X26001017) *Journal of Financial Economics*. Earlier version: [NBER Working Paper No. 33108](https://www.nber.org/papers/w33108), 2024
+1. Mazur, J. E. (1987). [An adjusting procedure for studying delayed reinforcement](https://doi.org/10.4324/9781315825502). In M. L. Commons, J. E. Mazur, J. A. Nevin, & H. Rachlin (Eds.), *Quantitative Analyses of Behavior, Vol. 5: The Effect of Delay and of Intervening Events on Reinforcement Value*, 55–73. Erlbaum.
+2. Green, L., & Myerson, J. (2004). [A discounting framework for choice with delayed and probabilistic rewards](https://doi.org/10.1037/0033-2909.130.5.769). *Psychological Bulletin*, 130(5), 769–792.
+3. Schulz van Endert, T., & Mohr, P. N. C. (2020). [Likes and impulsivity: Investigating the relationship between actual smartphone use and delay discounting](https://doi.org/10.1371/journal.pone.0241383). *PLOS ONE*, 15(11), e0241383.
+4. Nelson, S. E., Edson, T. C., Louderback, E. R., Tom, M. A., Grossman, A., & LaPlante, D. A. (2021). [Changes to the playing field: A contemporary study of actual European online sports betting](https://doi.org/10.1556/2006.2021.00029). *Journal of Behavioral Addictions*, 10(3), 396–411.
+5. Zhang, K., Rights, J. D., Deng, X., Lesch, T., & Clark, L. (2024). [Within-session chasing of losses and wins in an online eCasino](https://doi.org/10.1038/s41598-024-70738-3). *Scientific Reports*, 14, 20353.
+6. Baker, S. R., Balthrop, J., Johnson, M. J., Kotter, J. D., & Pisciotta, K. (2026). [Gambling away stability: Sports betting's impact on vulnerable households](https://www.sciencedirect.com/science/article/abs/pii/S0304405X26001017). *Journal of Financial Economics*. Earlier version: [NBER Working Paper No. 33108](https://www.nber.org/papers/w33108), 2024.
