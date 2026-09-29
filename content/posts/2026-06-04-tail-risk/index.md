@@ -14,9 +14,9 @@ cover:
   hidden: true
 ---
 
-> **In short.** In my baseline model, moving from the Low to the Very-high behavioral scenario raised mean annual loss by $3.48\times$ and the average loss in the worst 5% of simulated years by $2.05\times$. Absolute harm increased, but tail loss grew *less* than proportionally to the mean. A convex-order argument explains why this must happen in a restricted frequency-only model. Allowing bet-count dispersion to change by scenario can reverse the result mathematically, but every tested crossing specification pushes either the mean or the median count outside a plausible empirical range.
+> **Disclaimer** AI was used in parts of the writing and coding, along with assistance in tex. I believe the explanation of the results were more explicit with the help of AI. The following post gets pretty technical. 
 
-## A question left over from M3
+## Post M3 Competition
 
 Following the 2026 Mathworks Modeling Challenge, a mathematics competition that incorporates both mathematical modeling and technical computing, I became more invested in the effects of gambling on individuals. During the competition, the central question – “Should society be concerned about online gambling and its continued growth?” – was broken down into three main parts: estimating disposable income, evaluating risk from demographics, and quantifying these predictions. Given that we only had 14 hours, there seemed to be so much more territory worth exploring post-comp.
 
@@ -79,7 +79,7 @@ $$
 
 where $\mathrm{CVaR}_{95}$ is the average loss among the worst 5% of simulated years.
 
-## The model rejected the strongest hypothesis
+## Hypothesis Rejected 
 
 The baseline simulation drew 200,000 bettor-years per scenario. Mean loss rose from 6.48 to 22.52, while $\mathrm{CVaR}_{95}$ rose from 77.94 to 159.51. H1 and the absolute-CVaR part of H2 held. H3 did not: the mean rose $3.48\times$, compared with only $2.05\times$ for CVaR. Equivalently, $\mathrm{CVaR}_{95}/\mathbb{E}[L]$ fell from 12.03 to 7.08. Across twenty independent batches of 10,000 paths, the 95% Monte Carlo intervals were $[6.33,6.62]$ and $[22.26,22.79]$ for the Low and Very-high means, and $[77.58,78.26]$ and $[158.77,160.19]$ for their CVaRs. These intervals measure simulation precision, not uncertainty in the behavioral assumptions.
 
@@ -91,7 +91,7 @@ That distinction kept the model tied to gambling rather than turning it into an 
 
 A separate 100,000-path stylized bankroll sensitivity used its own common-random-number run. Its unlimited-bankroll relative-tail ratio was 0.584, rather than the headline run's 0.589; at the tightest starting bankroll—$25\times$ the mean stake, or about 152.50 euros—it fell to 0.563, and 4.16% of Very-high paths exhausted the bankroll. The floor truncated the Very-high arm's tail more strongly, so finite bankroll made H3 harder to satisfy, not easier.
 
-## A small effect hidden by simulation noise
+## Effect Hidden by Simulation Noise
 
 Before interpreting the decomposition, it was necessary to establish whether post-loss escalation contributed any effect at all. In a 500,000-path-per-case common-random-number decomposition, holding escalation at its Low value and increasing annual bets from 23 to 78 moved mean loss from 6.43 to 21.88 and CVaR from 78.08 to 153.24. Changing escalation alone at $N=23$ moved mean loss only to 6.62 and CVaR to 81.24—an effect of about 3.0% in simulation and 2.93% analytically. Rising frequency therefore accounts for almost all of the baseline change.
 
@@ -172,7 +172,7 @@ $$
 and convex-order monotonicity then gives $R_{N+1}\le R_N$.
 This upgrades the simulation-based finding to a structural result for the frequency-only i.i.d. submodel, even with scenario-invariant independent stake heterogeneity. It does *not* prove the result for the full two-state process, where post-loss escalation makes wagers state-dependent and changes across scenarios. That extension remains numerical.
 
-## Breaking the theorem — and checking what broke
+## Breaking the theorem
 
 The proposition also suggests where to look for a counterexample: alter the normalized loss distribution itself. Fixed bet counts were replaced with rounded lognormal counts, whose locations preserved the same scenario means, 23 and 78, while their dispersion parameters were allowed to differ. An exact C++ wager loop was used because, at $\sigma_H=2.2$, the rare paths with enormous uncapped counts are precisely the paths that drive CVaR; a normal approximation or an arbitrary loop cap can erase the effect under study.
 

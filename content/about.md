@@ -8,10 +8,9 @@ ShowReadingTime: false
 ShowPostNavLinks: false
 disableShare: true
 ---
+Current high school senior. Coming from places of curiosity, this site serves as a place where I can write about things I find interesting and more, connecting my research and interests together.
 
-I'm a high school student in New Jersey. Most of what I work on comes back to the same question: how do people decide when they don't have enough information to decide well?
-
-That question shows up in a few places for me.
+For now, my tailored focus is the concept of making decisions, or one could say decision making. Through my experience in chess, I began to investigate the factors involved in our choices from different angles, spanning from a cognitive/psychological standpoint and mathematical models.
 
 **Chess.** I play competitively, and I'm interested in sacrifices specifically — positions where you give up material without being able to calculate the payoff to the end. It's a clean natural experiment in risk-taking under a known skill gradient.
 
