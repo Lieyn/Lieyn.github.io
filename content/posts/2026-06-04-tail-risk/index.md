@@ -16,7 +16,7 @@ cover:
 
 > **Disclaimer:** AI was used in the computational aspects and used to verify the analysis.
 
-## After the M3 Challenge
+## Post-M3 Challenge
 
 Following the 2026 MathWorks Math Modeling Challenge, a mathematics competition that incorporates both mathematical modeling and technical computing, I became more invested in the effects of gambling on individuals. During the competition, the central question – “Should society be concerned about online gambling and its continued growth?” – was broken down into three main parts: estimating disposable income, evaluating risk from demographics, and quantifying these predictions. Given that we only had 14 hours, there seemed to be so much more territory worth exploring post-comp.
 
@@ -42,7 +42,7 @@ This equation comes from the delay-discounting literature (Mazur, 1987; Green an
 
 Crucially, $k$ is background motivation, not an input to the gambling simulation; there is no computational role in the model. We use four assumed activity levels, indexed by $z=0,1,2,3$. We can therefore categorize the model through behavioral intensification, not as a model of hyperbolic discounting or impatience.
 
-## Setting up the simulation
+## Simulation Setup
 
 We can simulate this by creating imaginary gamblers and establishing rules for their betting.
 The model uses four activity levels, ranging from 23 to 78 bets per year. In the higher-activity scenarios, a loss is also more likely to trigger a larger next bet.
@@ -85,7 +85,7 @@ $$
 
 At a €6.10 stake, it is about €0.28. Each actual wager still either wins or loses.
 
-## What counts as a bad outcome?
+## What is a Bad Outcome?
 
 Looking only at the average can hide important differences. Two groups could lose the same amount on average, while one group has a small number of people who lose much more than everyone else.
 
@@ -112,7 +112,7 @@ $L$ represents annual net loss, $\mathbb{E}[L]$ means average annual loss, and t
 
 Annual net loss subtracts winnings from lost stakes. A person who ends the year ahead has a negative net loss. The reported average includes those winning years too.
 
-## The prediction that failed
+## Failed Prediction
 
 The comparison between the lowest and highest activity levels showed:
 
@@ -165,7 +165,7 @@ These intervals describe how precisely the computer estimates the answers under 
 
 A separate experiment asked what changes when gamblers can run out of money, since the main simulation lets everyone keep betting no matter how much they have lost. With starting funds of about €152.50 (25 times the average normal bet), 4.16% of the Very-high simulated years exhausted those funds. The comparison ratio $Q$ fell from 0.584 without the restriction to 0.563 with it. This run used a separate set of random inputs, which explains why its unrestricted ratio differs slightly from the baseline's 0.589. Limiting available funds restricted the highest losses more strongly in the higher-activity group, making the third prediction harder to satisfy.
 
-## Why more bets change the role of luck
+## Betting Quantity & Luck
 
 Think about flipping a coin four times. Three heads would make heads 75% of the results. A short streak can dominate such a small sample.
 
@@ -177,7 +177,7 @@ This does not mean someone who has lost several times is “due” to win. The n
 
 With more bets, luck contributes less relative to the growing average loss. The total losses can still become larger and more spread out in euros. What becomes smaller is their spread **compared with the average**.
 
-## Which behavior caused most of the increase?
+## Increase from Behavior
 
 Two things changed between the Low and Very-high scenarios: betting frequency and the chance of raising the next bet after a loss. To separate their effects, the simulation changed one at a time.
 
@@ -189,7 +189,7 @@ Measuring that small effect required a fair comparison. If two simulations recei
 
 The solution was to reuse matched random inputs across the comparisons. This is called **common random numbers**—roughly, comparing two strategies against the same underlying luck. It made the small effect easier to measure without making the effect itself larger.
 
-## How the Python code separates the two effects
+## Python --> two effects
 
 The Python experiment uses four cases: the Low reference, a frequency-only change, an escalation-only change, and both changes together. We can use a **decomposition**: changing the details separately to see which explains the result.
 
@@ -250,7 +250,7 @@ These are different comparisons. The first changes how often escalation is trigg
 
 In the 78-bet diagnostic, matching random inputs reduced the variance of the estimated difference by about 223 times. That corresponds to roughly $\sqrt{223}=14.9$ times smaller standard error—a measure of the estimate's random fluctuation. The improvement made a small effect easier to detect; it did not change the underlying effect.
 
-## Was the result just a coincidence?
+## Coincidence?
 
 The project tested 162 combinations of assumptions, including different bet-size patterns and different increases after losses. None produced worst-year losses that grew proportionally faster than average losses. Many of these tests reflected the same averaging mechanism, so they should not be treated as 162 independent discoveries.
 
@@ -258,7 +258,7 @@ A mathematical proof provided a stronger result for a simpler version of the mod
 
 The proof has a limited scope. It does not cover the full model, where losing can change the size of the next bet. The more complicated model was examined through simulation.
 
-## The mathematics behind the averaging effect
+## Averaging Effect
 
 This section gives the details behind the summary above: first the proof, then the 162 designs.
 
@@ -318,7 +318,7 @@ In 81 of the designs, each simulated person also got their own betting scale $S$
 
 Frequency growth explained 92.18% of the variation in $Q$ across the tested designs, and $Q$ had a correlation of 0.9728 with $1/\sqrt{N_\text{high}/N_\text{low}}$, the averaging factor from the formula above. In other words, most of the 162 results are the same averaging effect showing up again. These patterns support the averaging explanation within the sweep. They do not represent independent evidence that the model fits real-world behavior.
 
-## Could the result reverse?
+## Possible Reverse
 
 So far, every person within an activity level had the same number of annual bets. But real gamblers differ: some bet occasionally, while others bet extremely often.
 
