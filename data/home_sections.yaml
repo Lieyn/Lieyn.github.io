@@ -1,0 +1,19 @@
+# Homepage topic sections, rendered in this order by layouts/home.html.
+#
+# To add a topic:
+#   1. Add an entry below.
+#   2. Add `categories: ["<category>"]` to the front matter of that topic's posts.
+#
+# Fields:
+#   title        Section heading shown on the homepage.
+#   category     Exact value used in posts' `categories` front matter.
+#   description  One line shown under the heading.
+#   start_here   Optional. Content paths of featured posts, in display order.
+#                Each must have a `summary` in its front matter.
+
+- title: "Decision Lab"
+  category: "Decision Lab"
+  description: "My ongoing project on decision-making under uncertainty: heuristics, risk-taking, and the math behind them, with chess as the testbed."
+  start_here:
+    - /posts/2026-07-27-satisficing-and-sacrifice
+    - /posts/2026-06-04-tail-risk

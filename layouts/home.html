@@ -1,0 +1,64 @@
+{{- /*
+  Homepage. Intro comes from content/_index.md; one section per entry in
+  data/home_sections.yaml. Adding a topic needs no edits here.
+*/ -}}
+{{- define "main" }}
+{{- $dateFormat := default ":date_long" site.Params.DateFormat }}
+
+<div class="home">
+  <header class="home-intro">
+    <h1>{{ site.Title }}</h1>
+    {{- with .Params.tagline }}
+    <p class="home-tagline">{{ . }}</p>
+    {{- end }}
+    {{- with .Content }}
+    <div class="home-about">{{ . }}</div>
+    {{- end }}
+  </header>
+
+  {{- range hugo.Data.home_sections }}
+  {{- $section := . }}
+  {{- $id := urlize .title }}
+  {{- $posts := where site.RegularPages "Params.categories" "intersect" (slice .category) }}
+  <section class="home-section" aria-labelledby="{{ $id }}">
+    <h2 id="{{ $id }}">{{ .title }}</h2>
+    {{- with .description }}
+    <p class="home-section-desc">{{ . }}</p>
+    {{- end }}
+
+    {{- with .start_here }}
+    <h3>Start here</h3>
+    <ul class="home-featured">
+      {{- range . }}
+      {{- $p := site.GetPage . }}
+      {{- if not $p }}{{ errorf "data/home_sections.yaml: start_here page %q not found" . }}{{ end }}
+      <li>
+        <a class="home-post-title" href="{{ $p.RelPermalink }}">{{ $p.Title }}</a>
+        <div class="home-meta">
+          <time datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date | time.Format $dateFormat }}</time>
+          <span aria-hidden="true">&nbsp;·&nbsp;</span>
+          <span>{{ i18n "read_time" $p.ReadingTime | default (printf "%d min" $p.ReadingTime) }}</span>
+        </div>
+        {{- with $p.Params.summary }}
+        <p class="home-summary">{{ . }}</p>
+        {{- end }}
+      </li>
+      {{- end }}
+    </ul>
+    {{- end }}
+
+    {{- with $posts }}
+    <h3>All {{ $section.title }} posts</h3>
+    <ul class="home-list">
+      {{- range .ByDate.Reverse }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format $dateFormat }}</time>
+      </li>
+      {{- end }}
+    </ul>
+    {{- end }}
+  </section>
+  {{- end }}
+</div>
+{{- end }}

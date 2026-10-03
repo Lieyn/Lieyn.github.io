@@ -38,14 +38,7 @@ pygmentsUseClasses = true
   comments = false
   showtoc = true
 
-  # Lil'Log model: full chronological stream on the homepage
-  [params.homeInfoParams]
-    Title = "Quan Tran"
-    Content = """
-I'm a high school student working through how people make decisions under uncertainty — in chess, in research, and in teaching.
-
-Mostly I write up things I've actually built or proved. Posts lean quantitative; code and data are linked where they exist.
-"""
+  # Homepage copy lives in content/_index.md; topic sections in data/home_sections.yaml.
 
   [[params.socialIcons]]
     name = "github"
