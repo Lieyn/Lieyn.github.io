@@ -6,6 +6,8 @@ draft: false
 math: true
 author: "Quan Tran"
 tags: ["simulation", "tail-risk", "convex-order", "behavioral-economics", "monte-carlo"]
+summary: "A simulation of what happens when people bet more often: average losses rise, but the worst years shrink relative to the average. Includes a short proof, a counterexample, and why the counterexample fails a reality check."
+categories: ["Decision Lab"]
 ShowToc: true
 TocOpen: true
 ShowReadingTime: true

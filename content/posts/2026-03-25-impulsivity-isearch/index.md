@@ -5,6 +5,8 @@ draft: false
 math: false
 author: "Quan Tran"
 tags: ["discounting", "impulsivity", "attention"]
+summary: "The school essay that first got me thinking about impatience, social media, and gambling."
+categories: ["Decision Lab"]
 ShowToc: true
 TocOpen: true
 ShowReadingTime: true

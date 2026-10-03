@@ -6,6 +6,8 @@ draft: false
 math: true
 author: "Quan Tran"
 tags: ["bounded rationality", "heuristics", "chess", "decision theory"]
+summary: "Why does knowing we should be careful fail to prevent mistakes? Simon, Kahneman and Tversky, and what chess sacrifices reveal about disciplined intuition."
+categories: ["Decision Lab"]
 ShowToc: true
 TocOpen: true
 ShowReadingTime: true
