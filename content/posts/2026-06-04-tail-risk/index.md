@@ -90,7 +90,7 @@ We predict how an individual's annual net gambling loss changes when they bet mo
 
 ### 2.3 Bet Mechanics and Expected Loss
 
-For a stake of $s$ euros, half the outcomes lose $s$ and half earn $10s/11$. The expected loss per wager is
+For a stake $s$ (measured in euros), half the outcomes lose $s$ and half earn a profit of $10s/11$. The expected loss per wager is
 
 $$
 \frac12 s-\frac12\left(\frac{10}{11}s\right)=\frac{s}{22}. \tag{2}
@@ -605,25 +605,25 @@ The outer loop runs one simulated year at a time and first draws the bet count `
 
 | Symbol or term | Meaning |
 |---|---|
-| $s$ | Stake on a particular bet |
-| $m$ | Mean normal stake (€6.10 in the baseline) |
-| $N$ | Number of bets in a year; fixed in the baseline, random in Section 8 |
+| $s$ | Stake on a particular bet (€) |
+| $m$ | Mean normal stake (€; €6.10 in the baseline) |
+| $N$ | Number of bets in a year (count); fixed in the baseline, random in Section 8 |
 | $z$ | Scenario index from 0 to 3; not a measured psychological score |
-| $p_C$ | Probability of an elevated next stake, conditional on a loss |
-| $L$ | Annual net loss; negative values mean annual profit |
+| $p_C$ | Probability of an elevated next stake, conditional on a loss (dimensionless) |
+| $L$ | Annual net loss (€); negative values mean annual profit |
 | $\mathbb E[X]$ | Expected value (probability-weighted average) of $X$ |
-| $\mathrm{CVaR}_{95}$ | Average loss in the worst 5% of outcomes |
-| $Q$ | Growth multiple of CVaR divided by growth multiple of mean loss |
-| $Y_t$ | Net loss on bet $t$ in the theoretical model |
-| $\mu$ | Positive mean per-bet loss in the theoretical model |
-| $\sigma$ | Standard deviation of per-bet loss (Section 6.2) |
-| $\sigma_{\mathrm{count}}$ | Dispersion of log counts in the random-count experiments |
-| $S$ | Independent dimensionless betting-scale multiplier |
-| $B$ | A bettor's monetary stake scale in euros (Section 7.2) |
-| $\bar Y_N$ | Average of the first $N$ per-bet losses |
-| $R_N$ | CVaR divided by mean loss at bet count $N$ |
+| $\mathrm{CVaR}_{95}$ | Average loss in the worst 5% of outcomes (€) |
+| $Q$ | Growth multiple of CVaR divided by growth multiple of mean loss (dimensionless) |
+| $Y_t$ | Net loss on bet $t$ in the theoretical model (€) |
+| $\mu$ | Positive mean per-bet loss in the theoretical model (€) |
+| $\sigma$ | Standard deviation of per-bet loss (€; Section 6.2) |
+| $\sigma_{\mathrm{count}}$ | Dispersion of log counts in the random-count experiments (dimensionless) |
+| $S$ | Independent betting-scale multiplier (dimensionless) |
+| $B$ | A bettor's monetary stake scale (€; Section 7.2) |
+| $\bar Y_N$ | Average of the first $N$ per-bet losses (€) |
+| $R_N$ | CVaR divided by mean loss at bet count $N$ (dimensionless) |
 | $\alpha$ | CVaR confidence level; 0.95 leaves a worst tail of 5% |
-| $A, D, k, V(D)$ | Reward amount, delay, discounting parameter, and present subjective value |
+| $A, D, k, V(D)$ | Reward amount (€), delay (weeks), discounting parameter (per week), and present subjective value (€) |
 | iid | Independent and identically distributed |
 | Standard error | Standard deviation of an estimator across repeated runs |
 | Calibration | Choosing a parameter so a specified target is matched |
